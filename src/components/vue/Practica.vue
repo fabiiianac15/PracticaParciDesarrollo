@@ -1,98 +1,55 @@
+
 <script setup>
 import { ref } from "vue";
 
-const carSlots = ref([
-  { active: true, value: 1000 },
-  { active: true, value: 1100 },
-  { active: true, value: 1200 },
-  { active: true, value: 1300 },
-  { active: true, value: 1400 },
-  { active: true, value: 1500 },
+const items = ref([
+  { title: "Tema 1", subtitle: "Texto del tema 1", estado: false },
+  { title: "Tema 2", subtitle: "Texto del tema 2", estado: false },
+  { title: "Tema 3", subtitle: "Texto del tema 3", estado: false },
 ]);
 
-const bikeSlots = ref([
-  { active: true, value: 200 },
-  { active: true, value: 200 },
-  { active: true, value: 200 },
-]);
+const gridLayout = ref('grid-cols-3');
 
-const total = ref(0);
+function mostrar(index) {
+  items.value[index].estado = !items.value[index].estado;
+  for (let i = 0; i < items.value.length; i++) {
+    if (i !== index) {
+      items.value[i].estado = false;
+    }
+  }
+}
 
-const toggleCarSlot = (index) => {
-  const car = carSlots.value[index];
-  car.active = !car.active;
-  total.value += car.active ? car.value : -car.value;
-};
+function organizarEnFilas() {
+  gridLayout.value = 'grid-cols-3';
+}
 
-const toggleBikeSlot = (index) => {
-  const bike = bikeSlots.value[index];
-  bike.active = !bike.active;
-  total.value += bike.active ? bike.value : -bike.value;
-};
-
-const restartTotal = () => {
-  total.value = 0;
-};
+function organizarEnColumnas() {
+  gridLayout.value = 'grid-rows-3';
+}
 </script>
 
+
+
 <template>
-  <div class="container mx-auto p-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 min-h-screen">
-    <h1 class="font-bold mb-6 text-3xl text-center text-white">Parqueadero</h1>
-
-    <div class="section mb-8">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Carriles de Autos</h2>
-      <div class="grid grid-cols-3 gap-4">
-        <div v-for="(car, index) in carSlots" :key="index">
-          <div
-            @click="toggleCarSlot(index)"
-            :class="car.active ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'"
-            class="slot w-24 h-24 flex justify-center items-center text-white rounded-lg cursor-pointer transition-transform transform hover:scale-105"
-          >
-            {{ car.active ? 'Libre' : 'Ocupado' }}
+  <div class="container mx-auto p-4 pt-12">
+    <div class="flex flex-wrap justify-center mb-4">
+      <button class="btn btn-primary mr-2 rounded bg-slate-600" @click="organizarEnFilas">Organizar en Filas</button>
+      <button class="btn btn-secondary mr-2 rounded bg-slate-500" @click="organizarEnColumnas">Organizar en Columnas</button>
+    </div>
+    <div :class="gridLayout" class="grid gap-4 flex-wrap justify-center">
+      <div class="w-full sm:w-1/2 md:w-1/3 p-4" v-for="(item, i) in items" :key="i">
+        <div class="bg-white shadow-md rounded-lg px-4 py-6">
+          <div class="flex justify-between items-center py-2">
+            <h3 class="text-lg font-bold">{{ item.title }}</h3>
+            <span class="text-2xl cursor-pointer" @click="mostrar(i)">
+              {{ item.estado ? '-' : '+' }}
+            </span>
+          </div>
+          <div v-show="item.estado" class="bg-gray-100 p-4 mt-4">
+            {{ item.subtitle }}
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="section mb-8">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Carriles de Motos</h2>
-      <div class="grid grid-cols-3 gap-4">
-        <div v-for="(bike, index) in bikeSlots" :key="index">
-          <div
-            @click="toggleBikeSlot(index)"
-            :class="bike.active ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'"
-            class="slot w-24 h-24 flex justify-center items-center text-white rounded-lg cursor-pointer transition-transform transform hover:scale-105"
-          >
-            {{ bike.active ? 'Libre' : 'Ocupado' }}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="total-section text-center mt-12">
-      <h2 class="text-2xl font-semibold mb-2 text-white">TOTAL A PAGAR</h2>
-      <p class="text-3xl font-bold text-cyan-300">Total: {{ total }}</p>
-    </div>
-
-    <div class="text-center mt-6">
-      <button @click="restartTotal" class="p-4 bg-yellow-500 rounded-lg text-white font-semibold hover:bg-yellow-600 transition-colors">
-        Reiniciar
-      </button>
     </div>
   </div>
 </template>
-
-<style scoped>
-.container {
-  max-width: 800px;
-}
-
-.section {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 2rem;
-}
-
-.slot {
-  transition: transform 0.2s;
-}
-</style>
